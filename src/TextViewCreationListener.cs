@@ -13,40 +13,28 @@ namespace ErrorCatcher
     [TextViewRole(PredefinedTextViewRoles.Interactive)]
     public class TextViewCreationListener : IWpfTextViewCreationListener
     {
-        private IErrorList _errorList;
-        private Adornment _adornment;
-
         [Import]
         public ITextDocumentFactoryService DocumentService { get; set; }
-
-        [Import]
-        public SVsServiceProvider ServiceProvider { get; set; }
 
         public void TextViewCreated(IWpfTextView textView)
         {
             if (!DocumentService.TryGetTextDocument(textView.TextBuffer, out var doc))
                 return;
 
-            if (ServiceProvider.GetService(typeof(SVsErrorList)) is IErrorList errorList)
-            {
-                _errorList = errorList;
-                _adornment = textView.Properties.GetOrCreateSingletonProperty(() => new Adornment(textView, _errorList, doc.FilePath));
+            textView.Properties.AddProperty("filePath", doc.FilePath);
+            textView.Closed += TextView_Closed;
 
-                _errorList.TableControl.EntriesChanged += OnErrorsUpdated;
-                textView.Closed += TextView_Closed;
-            }
+            var adornment = textView.Properties.GetOrCreateSingletonProperty(() => new Adornment(textView));
+            ErrorCatcherPackage.Instance.Register(doc.FilePath, (error, warning, info) => adornment.Update(error, warning, info));
         }
-
-        private void OnErrorsUpdated(object sender, Microsoft.VisualStudio.Shell.TableControl.EntriesChangedEventArgs e)
-        {
-            if (_adornment != null)
-                _adornment.Update();
-        }
-
         private void TextView_Closed(object sender, EventArgs e)
         {
-            if (_errorList != null)
-                _errorList.TableControl.EntriesChanged -= OnErrorsUpdated;
+            var view = (IWpfTextView)sender;
+
+            if (view.Properties.TryGetProperty("filePath", out string filePath))
+            {
+                ErrorCatcherPackage.Instance.Unregister(filePath);
+            }
         }
     }
 }

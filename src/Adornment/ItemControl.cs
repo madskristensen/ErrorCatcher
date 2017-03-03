@@ -4,36 +4,36 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using System.Runtime.InteropServices;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows;
 
 namespace ErrorCatcher
 {
     public class ItemControl : StackPanel
     {
         private TextBlock _text;
+        public ImageMoniker _icon;
 
-        public ItemControl(ImageMoniker moniker)
+        public ItemControl(ImageMoniker icon)
         {
-            Icon = moniker;
+            _icon = icon;
             Orientation = Orientation.Horizontal;
             Visibility = Visibility.Collapsed;
         }
 
-        public ImageMoniker Icon { get; set; }
-
         protected override void OnInitialized(EventArgs e)
         {
             var img = new Image();
-            img.Source = ToBitmap(Icon, 14);
+            img.Source = ToBitmap(_icon, 14);
             img.Margin = new Thickness(0, 0, 4, 3);
             img.SetValue(RenderOptions.BitmapScalingModeProperty, BitmapScalingMode.HighQuality);
             Children.Add(img);
 
             _text = new TextBlock();
             _text.Width = 30;
+            _text.Margin = new Thickness(0, 0, 0, 1);
             _text.SetResourceReference(Control.ForegroundProperty, VsBrushes.CaptionTextKey);
             _text.SetValue(TextOptions.TextRenderingModeProperty, TextRenderingMode.Aliased);
             _text.SetValue(TextOptions.TextFormattingModeProperty, TextFormattingMode.Ideal);

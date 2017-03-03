@@ -1,8 +1,6 @@
 ﻿using EnvDTE;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Shell.TableManager;
 using Microsoft.VisualStudio.Text.Editor;
 using System;
 using System.Windows;
@@ -16,16 +14,12 @@ namespace ErrorCatcher
     class Adornment : StackPanel
     {
         private ITextView _view;
-        private IErrorList _errorList;
         private ItemControl _error, _warning, _info;
-        private string _fileName;
         private DTE _dte = ServiceProvider.GlobalProvider.GetService(typeof(DTE)) as DTE;
 
-        public Adornment(IWpfTextView view, IErrorList errorList, string fileName)
+        public Adornment(IWpfTextView view)
         {
             _view = view;
-            _errorList = errorList;
-            _fileName = fileName;
 
             Visibility = Visibility.Hidden;
             Orientation = Orientation.Vertical;
@@ -60,45 +54,24 @@ namespace ErrorCatcher
             }));
         }
 
-        public void Update()
+        public void Update(int error, int warning, int info)
         {
             if (_error == null)
                 return;
 
-            int error = 0, warning = 0, info = 0;
-
-            foreach (var entry in _errorList.TableControl.Entries)
+            ThreadHelper.Generic.BeginInvoke(() =>
             {
-                if (!entry.TryGetValue(StandardTableKeyNames.DocumentName, out string fileName) || fileName != _fileName)
-                    break;
-
-                if (!entry.TryGetValue(StandardTableKeyNames.ErrorSeverity, out __VSERRORCATEGORY severity))
-                    break;
-
-                switch (severity)
-                {
-                    case __VSERRORCATEGORY.EC_ERROR:
-                        error += 1;
-                        break;
-                    case __VSERRORCATEGORY.EC_WARNING:
-                        warning += 1;
-                        break;
-                    case __VSERRORCATEGORY.EC_MESSAGE:
-                        info += 1;
-                        break;
-                }
-            }
-
-            _error.Update(error);
-            _warning.Update(warning);
-            _info.Update(info);
+                _error.Update(error);
+                _warning.Update(warning);
+                _info.Update(info);
+            });
         }
 
         private void SetAdornmentLocation(object sender, EventArgs e)
         {
             var view = (IWpfTextView)sender;
-            Canvas.SetLeft(this, view.ViewportRight - ActualWidth - 40);
-            Canvas.SetTop(this, 10);
+            Canvas.SetLeft(this, view.ViewportRight - 50);
+            Canvas.SetTop(this, _view.ViewportTop + 20);
             Visibility = Visibility.Visible;
         }
 
