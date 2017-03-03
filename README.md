@@ -2,8 +2,7 @@
 
 [![Build status](https://ci.appveyor.com/api/projects/status/vuhkj8kbks3fewri?svg=true)](https://ci.appveyor.com/project/madskristensen/errorcatcher)
 
-<!-- Update the VS Gallery link after you upload the VSIX-->
-Download this extension from the [VS Gallery](https://visualstudiogallery.msdn.microsoft.com/[GuidFromGallery])
+Download this extension from the [VS Marketplace](https://marketplace.visualstudio.com/items?itemName=MadsKristensen.ErrorCatcherII)
 or get the [CI build](http://vsixgallery.com/extension/376e6cdc-893d-4ae7-ad93-325575c35301/).
 
 ---------------------------------------
