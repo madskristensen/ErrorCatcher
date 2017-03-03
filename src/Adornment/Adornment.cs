@@ -54,16 +54,16 @@ namespace ErrorCatcher
             }));
         }
 
-        public void Update(int error, int warning, int info)
+        public void Update(ErrorResult result)
         {
             if (_error == null)
                 return;
 
             ThreadHelper.Generic.BeginInvoke(() =>
             {
-                _error.Update(error);
-                _warning.Update(warning);
-                _info.Update(info);
+                _error.Update(result.Errors);
+                _warning.Update(result.Warnings);
+                _info.Update(result.Info);
             });
         }
 

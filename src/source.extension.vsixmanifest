@@ -4,6 +4,9 @@
         <Identity Id="376e6cdc-893d-4ae7-ad93-325575c35301" Version="1.0" Language="en-US" Publisher="Mads Kristensen" />
         <DisplayName>Error Catcher II</DisplayName>
         <Description xml:space="preserve">The easiest way to make sure not to miss any errors or warnings in any code file.</Description>
+        <MoreInfo>https://github.com/madskristensen/ErrorCatcher</MoreInfo>
+        <License>Resources\LICENSE</License>
+        <ReleaseNotes>https://github.com/madskristensen/ErrorCatcher/blob/master/CHANGELOG.md</ReleaseNotes>
         <Icon>Resources\Icon.png</Icon>
         <PreviewImage>Resources\Icon.png</PreviewImage>
         <Tags>error, exception</Tags>

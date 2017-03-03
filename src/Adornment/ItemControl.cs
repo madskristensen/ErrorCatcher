@@ -20,6 +20,7 @@ namespace ErrorCatcher
         {
             _icon = icon;
             Orientation = Orientation.Horizontal;
+            VerticalAlignment = VerticalAlignment.Center;
             Visibility = Visibility.Collapsed;
         }
 
@@ -27,13 +28,12 @@ namespace ErrorCatcher
         {
             var img = new Image();
             img.Source = ToBitmap(_icon, 14);
-            img.Margin = new Thickness(0, 0, 4, 3);
+            img.Margin = new Thickness(0, 0, 4, 0);
             img.SetValue(RenderOptions.BitmapScalingModeProperty, BitmapScalingMode.HighQuality);
             Children.Add(img);
 
             _text = new TextBlock();
             _text.Width = 30;
-            _text.Margin = new Thickness(0, 0, 0, 1);
             _text.SetResourceReference(Control.ForegroundProperty, VsBrushes.CaptionTextKey);
             _text.SetValue(TextOptions.TextRenderingModeProperty, TextRenderingMode.Aliased);
             _text.SetValue(TextOptions.TextFormattingModeProperty, TextFormattingMode.Ideal);

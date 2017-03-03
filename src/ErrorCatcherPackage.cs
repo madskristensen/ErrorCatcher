@@ -18,7 +18,7 @@ namespace ErrorCatcher
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
     public sealed class ErrorCatcherPackage : AsyncPackage
     {
-        private static Dictionary<string, Action<int, int, int>> _dic = new Dictionary<string, Action<int, int, int>>();
+        private static Dictionary<string, Action<ErrorResult>> _dic = new Dictionary<string, Action<ErrorResult>>();
         private IWpfTableControl _table;
 
         public static ErrorCatcherPackage Instance { get; private set; }
@@ -32,15 +32,14 @@ namespace ErrorCatcher
             Instance = this;
         }
 
-        public void Register(string fileName, Action<int, int, int> action)
+        public void Register(string fileName, Action<ErrorResult> action)
         {
             _dic[fileName] = action;
             var entries = _table.Entries.ToArray();
 
             Tasks.Task.Run(() =>
             {
-                UpdateFile(entries, fileName, out int error, out int warning, out int info);
-                _dic[fileName].Invoke(error, warning, info);
+                Update(entries);
             });
         }
 
@@ -62,40 +61,52 @@ namespace ErrorCatcher
 
         private void Update(ITableEntryHandle[] entries)
         {
+            var errors = GetErrors(entries);
+
             foreach (string file in _dic.Keys)
             {
-                UpdateFile(entries, file, out int error, out int warning, out int info);
-
-                _dic[file].Invoke(error, warning, info);
+                var error = errors.FirstOrDefault(e => e.FileName == file) ?? new ErrorResult(file);
+                _dic[file].Invoke(error);
             }
         }
 
-        private static void UpdateFile(ITableEntryHandle[] entries, string file, out int error, out int warning, out int info)
+        private static IEnumerable<ErrorResult> GetErrors(ITableEntryHandle[] entries)
         {
-            error = 0;
-            warning = 0;
-            info = 0;
+            var list = new Dictionary<string, ErrorResult>();
 
-            foreach (var entry in entries)
+            try
             {
-                if (!entry.TryGetValue(StandardTableKeyNames.DocumentName, out string fileName) || fileName != file)
-                    break;
-
-                if (!entry.TryGetValue(StandardTableKeyNames.ErrorSeverity, out __VSERRORCATEGORY severity))
-                    severity = __VSERRORCATEGORY.EC_MESSAGE;
-
-                switch (severity)
+                foreach (var entry in entries)
                 {
-                    case __VSERRORCATEGORY.EC_ERROR:
-                        error += 1;
+                    if (!entry.TryGetValue(StandardTableKeyNames.DocumentName, out string fileName) || !_dic.ContainsKey(fileName))
                         break;
-                    case __VSERRORCATEGORY.EC_WARNING:
-                        warning += 1;
-                        break;
-                    default:
-                        info += 1;
-                        break;
+
+                    if (!entry.TryGetValue(StandardTableKeyNames.ErrorSeverity, out __VSERRORCATEGORY severity))
+                        severity = __VSERRORCATEGORY.EC_MESSAGE;
+
+                    if (!list.ContainsKey(fileName))
+                        list.Add(fileName, new ErrorResult(fileName));
+
+                    switch (severity)
+                    {
+                        case __VSERRORCATEGORY.EC_ERROR:
+                            list[fileName].Errors += 1;
+                            break;
+                        case __VSERRORCATEGORY.EC_WARNING:
+                            list[fileName].Warnings += 1;
+                            break;
+                        default:
+                            list[fileName].Info += 1;
+                            break;
+                    }
                 }
+
+                return list.Values;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.Write(ex);
+                return null;
             }
         }
     }

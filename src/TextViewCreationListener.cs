@@ -1,6 +1,4 @@
-﻿using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Text;
+﻿using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using System;
@@ -25,8 +23,9 @@ namespace ErrorCatcher
             textView.Closed += TextView_Closed;
 
             var adornment = textView.Properties.GetOrCreateSingletonProperty(() => new Adornment(textView));
-            ErrorCatcherPackage.Instance.Register(doc.FilePath, (error, warning, info) => adornment.Update(error, warning, info));
+            ErrorCatcherPackage.Instance.Register(doc.FilePath, (result) => adornment.Update(result));
         }
+
         private void TextView_Closed(object sender, EventArgs e)
         {
             var view = (IWpfTextView)sender;

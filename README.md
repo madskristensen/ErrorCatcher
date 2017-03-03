@@ -12,8 +12,22 @@ The easiest way to make sure not to miss any errors or warnings in any code file
 
 See the [change log](CHANGELOG.md) for changes and road map.
 
-## Error display
-Description coming soon...
+### Show errors
+
+Sometimes it can be hard to tell if the file you're editing
+contains errors. Perhaps the error is all the way to the bottom
+of the file and you don't notice it. You might save the file
+containing the error and something bad happens when you then
+try to run your application.
+
+![Adornment](art/adornment.png)
+
+### How it works
+
+1. Displays errors at the top right corner of the editor
+2. Displays both the number of errors, warnings and messages
+3. Only shows errors that are currently visible in the Error List
+4. Click on the icons and the Error List opens up
 
 ## Contribute
 Check out the [contribution guidelines](.github/CONTRIBUTING.md)
