@@ -16,7 +16,7 @@ namespace ErrorCatcher
 
         public void TextViewCreated(IWpfTextView textView)
         {
-            if (!DocumentService.TryGetTextDocument(textView.TextBuffer, out var doc))
+            if (!DocumentService.TryGetTextDocument(textView.TextBuffer, out var doc) || ErrorCatcherPackage.Instance == null)
                 return;
 
             textView.Properties.AddProperty("filePath", doc.FilePath);
@@ -29,6 +29,14 @@ namespace ErrorCatcher
         private void TextView_Closed(object sender, EventArgs e)
         {
             var view = (IWpfTextView)sender;
+
+            if (view == null)
+                return;
+
+            if (view.Properties.TryGetProperty(typeof(Adornment), out Adornment adornment))
+            {
+                adornment.Dispose();
+            }
 
             if (view.Properties.TryGetProperty("filePath", out string filePath))
             {

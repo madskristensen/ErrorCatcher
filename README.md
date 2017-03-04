@@ -21,12 +21,18 @@ try to run your application.
 
 ![Adornment](art/adornment.png)
 
+### Customize
+You can decide if you wish to show errors, warnings and/or messages. Just click on the icons to enter edit mode. Then check the checkboxes for each of the error types you wish to see.
+
+![Edit Mode](art/edit-mode.png)
+
 ### How it works
 
 1. Displays errors at the top right corner of the editor
 2. Displays both the number of errors, warnings and messages
 3. Only shows errors that are currently visible in the Error List
-4. Click on the icons and the Error List opens up
+4. Right-click icons to enter edit mode
+5. Left-click icons to open Error List
 
 ## Contribute
 Check out the [contribution guidelines](.github/CONTRIBUTING.md)

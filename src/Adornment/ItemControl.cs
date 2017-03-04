@@ -11,29 +11,57 @@ using System.Windows.Media.Imaging;
 
 namespace ErrorCatcher
 {
-    public class ItemControl : StackPanel
+    public class ItemControl : StackPanel, IDisposable
     {
         private TextBlock _text;
+        private CheckBox _checkbox;
         public ImageMoniker _icon;
+        private __VSERRORCATEGORY _category;
+        private bool _isInEditMode;
 
-        public ItemControl(ImageMoniker icon)
+        public ItemControl(ImageMoniker icon, __VSERRORCATEGORY category)
         {
             _icon = icon;
+            _category = category;
+
             Orientation = Orientation.Horizontal;
             VerticalAlignment = VerticalAlignment.Center;
             Visibility = Visibility.Collapsed;
+
+            Options.Saved += OptionsSaved;
+        }
+
+        private void OptionsSaved(object sender, EventArgs e)
+        {
+            if (!_isInEditMode)
+            {
+                Visibility = IsChecked() && _text.Text != "0" ? Visibility.Visible : Visibility.Collapsed;
+            }
         }
 
         protected override void OnInitialized(EventArgs e)
         {
+            _checkbox = new CheckBox();
+            _checkbox.IsChecked = IsChecked();
+            _checkbox.Visibility = Visibility.Hidden;
+            _checkbox.Padding = new Thickness(0, 0, 4, 0);
+            _checkbox.Checked += CheckedChanged;
+            _checkbox.Unchecked += CheckedChanged;
+            Children.Add(_checkbox);
+
             var img = new Image();
             img.Source = ToBitmap(_icon, 14);
-            img.Margin = new Thickness(0, 0, 4, 0);
             img.SetValue(RenderOptions.BitmapScalingModeProperty, BitmapScalingMode.HighQuality);
-            Children.Add(img);
+
+            var border = new Border();
+            border.BorderBrush = Brushes.Transparent;
+            border.BorderThickness = new Thickness(1);
+            border.Child = img;
+            Children.Add(border);
 
             _text = new TextBlock();
             _text.Width = 30;
+            _text.Padding = new Thickness(4, 0, 0, 0);
             _text.SetResourceReference(Control.ForegroundProperty, VsBrushes.CaptionTextKey);
             _text.SetValue(TextOptions.TextRenderingModeProperty, TextRenderingMode.Aliased);
             _text.SetValue(TextOptions.TextFormattingModeProperty, TextFormattingMode.Ideal);
@@ -44,6 +72,57 @@ namespace ErrorCatcher
         {
             _text.Text = count.ToString();
             Visibility = count == 0 ? Visibility.Collapsed : Visibility.Visible;
+        }
+
+        public void EditMode(bool editable)
+        {
+            _isInEditMode = editable;
+            _checkbox.Visibility = editable ? Visibility.Visible : Visibility.Hidden;
+
+            if (editable)
+            {
+                Visibility = Visibility.Visible;
+
+            }
+            else if (!IsChecked() || _text.Text == "0")
+            {
+                Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void CheckedChanged(object sender, RoutedEventArgs e)
+        {
+            var isChecked = _checkbox.IsChecked.HasValue && _checkbox.IsChecked.Value;
+
+            switch (_category)
+            {
+                case __VSERRORCATEGORY.EC_ERROR:
+                    ErrorCatcherPackage.Instance.Options.ShowErrors = isChecked;
+                    break;
+                case __VSERRORCATEGORY.EC_WARNING:
+                    ErrorCatcherPackage.Instance.Options.ShowWarnings = isChecked;
+                    break;
+                case __VSERRORCATEGORY.EC_MESSAGE:
+                    ErrorCatcherPackage.Instance.Options.ShowMessages = isChecked;
+                    break;
+            }
+
+            ErrorCatcherPackage.Instance.Options.SaveSettingsToStorage();
+        }
+
+        private bool IsChecked()
+        {
+            switch (_category)
+            {
+                case __VSERRORCATEGORY.EC_ERROR:
+                    return ErrorCatcherPackage.Instance.Options.ShowErrors;
+                case __VSERRORCATEGORY.EC_WARNING:
+                    return ErrorCatcherPackage.Instance.Options.ShowWarnings;
+                case __VSERRORCATEGORY.EC_MESSAGE:
+                    return ErrorCatcherPackage.Instance.Options.ShowMessages;
+            }
+
+            return false;
         }
 
         private static BitmapSource ToBitmap(ImageMoniker moniker, int size)
@@ -70,5 +149,18 @@ namespace ErrorCatcher
             return data as BitmapSource;
         }
 
+        public void Dispose()
+        {
+            Options.Saved -= OptionsSaved;
+            if (_checkbox != null)
+            {
+                _checkbox.Checked -= CheckedChanged;
+                _checkbox.Unchecked -= CheckedChanged;
+            }
+
+            _checkbox = null;
+            _text = null;
+
+        }
     }
 }

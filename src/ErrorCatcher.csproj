@@ -52,6 +52,9 @@
     <Compile Include="Adornment\ItemControl.cs" />
     <Compile Include="ErrorCatcherPackage.cs" />
     <Compile Include="ErrorResult.cs" />
+    <Compile Include="Options.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="source.extension.cs">
       <DependentUpon>source.extension.vsixmanifest</DependentUpon>

@@ -1,35 +1,49 @@
 ﻿using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
-using System;
-using System.Runtime.InteropServices;
-using Tasks = System.Threading.Tasks;
-using System.Threading;
 using Microsoft.VisualStudio.Shell.Interop;
-using System.Collections.Generic;
 using Microsoft.VisualStudio.Shell.TableControl;
 using Microsoft.VisualStudio.Shell.TableManager;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading;
+using Tasks = System.Threading.Tasks;
 
 namespace ErrorCatcher
 {
+    [Guid("a6ea2ef8-a48a-4ebd-89d5-16b1ba16f5e3")]
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("#110", "#112", Vsix.Version, IconResourceID = 400)]
-    [Guid("a6ea2ef8-a48a-4ebd-89d5-16b1ba16f5e3")]
-    [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
+    [ProvideAutoLoad(VSConstants.VsEditorFactoryGuid.TextEditor_string)]
+    [ProvideOptionPage(typeof(Options), Vsix.Name, "General", 0, 0, true, new string[0])]
     public sealed class ErrorCatcherPackage : AsyncPackage
     {
-        private static Dictionary<string, Action<ErrorResult>> _dic = new Dictionary<string, Action<ErrorResult>>();
+        private Dictionary<string, Action<ErrorResult>> _dic = new Dictionary<string, Action<ErrorResult>>();
         private IWpfTableControl _table;
 
-        public static ErrorCatcherPackage Instance { get; private set; }
+        public static ErrorCatcherPackage Instance
+        {
+            get;
+            private set;
+        }
+
+        public Options Options
+        {
+            get;
+            private set;
+        }
 
         protected override async Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
-            var errorList = await GetServiceAsync(typeof(SVsErrorList)) as IErrorList;
-            _table = errorList.TableControl;
-            errorList.TableControl.EntriesChanged += EntriesChanged;
+            Options = (Options)GetDialogPage(typeof(Options));
 
-            Instance = this;
+            if (await GetServiceAsync(typeof(SVsErrorList)) is IErrorList errorList)
+            {
+                _table = errorList.TableControl;
+                errorList.TableControl.EntriesChanged += EntriesChanged;
+                Instance = this;
+            }
         }
 
         public void Register(string fileName, Action<ErrorResult> action)
@@ -70,7 +84,7 @@ namespace ErrorCatcher
             }
         }
 
-        private static IEnumerable<ErrorResult> GetErrors(ITableEntryHandle[] entries)
+        private IEnumerable<ErrorResult> GetErrors(ITableEntryHandle[] entries)
         {
             var list = new Dictionary<string, ErrorResult>();
 
