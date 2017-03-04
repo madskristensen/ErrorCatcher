@@ -22,7 +22,7 @@ try to run your application.
 ![Adornment](art/adornment.png)
 
 ### Customize
-You can decide if you wish to show errors, warnings and/or messages. Just click on the icons to enter edit mode. Then check the checkboxes for each of the error types you wish to see.
+You can decide if you wish to show errors, warnings and/or messages. Just right-click on the icons to enter edit mode. Then check the checkboxes for each of the error types you wish to see.
 
 ![Edit Mode](art/edit-mode.png)
 

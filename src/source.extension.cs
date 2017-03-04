@@ -11,7 +11,7 @@ namespace ErrorCatcher
         public const string Name = "Error Catcher II";
         public const string Description = @"The easiest way to make sure not to miss any errors or warnings in any code file.";
         public const string Language = "en-US";
-        public const string Version = "1.0";
+        public const string Version = "1.1";
         public const string Author = "Mads Kristensen";
         public const string Tags = "error, exception";
     }
