@@ -35,7 +35,9 @@ namespace ErrorCatcher
         {
             if (!_isInEditMode)
             {
-                Visibility = IsChecked() && _text.Text != "0" ? Visibility.Visible : Visibility.Collapsed;
+                bool isChecked = IsChecked();
+                _checkbox.IsChecked = isChecked;
+                Visibility = isChecked && _text.Text != "0" ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 
@@ -97,17 +99,17 @@ namespace ErrorCatcher
             switch (_category)
             {
                 case __VSERRORCATEGORY.EC_ERROR:
-                    ErrorCatcherPackage.Instance.Options.ShowErrors = isChecked;
+                    ErrorCatcherPackage.Options.ShowErrors = isChecked;
                     break;
                 case __VSERRORCATEGORY.EC_WARNING:
-                    ErrorCatcherPackage.Instance.Options.ShowWarnings = isChecked;
+                    ErrorCatcherPackage.Options.ShowWarnings = isChecked;
                     break;
                 case __VSERRORCATEGORY.EC_MESSAGE:
-                    ErrorCatcherPackage.Instance.Options.ShowMessages = isChecked;
+                    ErrorCatcherPackage.Options.ShowMessages = isChecked;
                     break;
             }
 
-            ErrorCatcherPackage.Instance.Options.SaveSettingsToStorage();
+            ErrorCatcherPackage.Options.SaveSettingsToStorage();
         }
 
         private bool IsChecked()
@@ -115,11 +117,11 @@ namespace ErrorCatcher
             switch (_category)
             {
                 case __VSERRORCATEGORY.EC_ERROR:
-                    return ErrorCatcherPackage.Instance.Options.ShowErrors;
+                    return ErrorCatcherPackage.Options.ShowErrors;
                 case __VSERRORCATEGORY.EC_WARNING:
-                    return ErrorCatcherPackage.Instance.Options.ShowWarnings;
+                    return ErrorCatcherPackage.Options.ShowWarnings;
                 case __VSERRORCATEGORY.EC_MESSAGE:
-                    return ErrorCatcherPackage.Instance.Options.ShowMessages;
+                    return ErrorCatcherPackage.Options.ShowMessages;
             }
 
             return false;

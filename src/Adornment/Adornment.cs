@@ -80,8 +80,8 @@ namespace ErrorCatcher
         private void SetAdornmentLocation(object sender, EventArgs e)
         {
             var view = (IWpfTextView)sender;
-            Canvas.SetLeft(this, view.ViewportRight - 60);
-            Canvas.SetTop(this, _view.ViewportTop + 20);
+            Canvas.SetLeft(this, view.ViewportRight - 65);
+            Canvas.SetTop(this, _view.ViewportTop + 10);
             Visibility = Visibility.Visible;
         }
 

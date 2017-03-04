@@ -16,14 +16,14 @@ namespace ErrorCatcher
 
         public void TextViewCreated(IWpfTextView textView)
         {
-            if (!DocumentService.TryGetTextDocument(textView.TextBuffer, out var doc) || ErrorCatcherPackage.Instance == null)
+            if (!DocumentService.TryGetTextDocument(textView.TextBuffer, out var doc) || ErrorProcessor.Instance == null)
                 return;
 
             textView.Properties.AddProperty("filePath", doc.FilePath);
             textView.Closed += TextView_Closed;
 
             var adornment = textView.Properties.GetOrCreateSingletonProperty(() => new Adornment(textView));
-            ErrorCatcherPackage.Instance.Register(doc.FilePath, (result) => adornment.Update(result));
+            ErrorProcessor.Instance.Register(doc.FilePath, (result) => adornment.Update(result));
         }
 
         private void TextView_Closed(object sender, EventArgs e)
@@ -40,7 +40,7 @@ namespace ErrorCatcher
 
             if (view.Properties.TryGetProperty("filePath", out string filePath))
             {
-                ErrorCatcherPackage.Instance.Unregister(filePath);
+                ErrorProcessor.Instance.Unregister(filePath);
             }
         }
     }

@@ -51,7 +51,8 @@
     <Compile Include="Adornment\AdornmentLayer.cs" />
     <Compile Include="Adornment\ItemControl.cs" />
     <Compile Include="ErrorCatcherPackage.cs" />
-    <Compile Include="ErrorResult.cs" />
+    <Compile Include="ErrorList\ErrorProcessor.cs" />
+    <Compile Include="ErrorList\ErrorResult.cs" />
     <Compile Include="Options.cs">
       <SubType>Component</SubType>
     </Compile>
