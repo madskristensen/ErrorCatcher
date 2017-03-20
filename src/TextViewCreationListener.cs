@@ -8,7 +8,7 @@ namespace ErrorCatcher
 {
     [Export(typeof(IWpfTextViewCreationListener))]
     [ContentType("code")]
-    [TextViewRole(PredefinedTextViewRoles.Interactive)]
+    [TextViewRole(PredefinedTextViewRoles.PrimaryDocument)]
     public class TextViewCreationListener : IWpfTextViewCreationListener
     {
         [Import]

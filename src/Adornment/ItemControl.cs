@@ -72,8 +72,11 @@ namespace ErrorCatcher
 
         public void Update(int count)
         {
-            _text.Text = count.ToString();
-            Visibility = count == 0 ? Visibility.Collapsed : Visibility.Visible;
+            if (_text != null)
+            {
+                _text.Text = count.ToString();
+                Visibility = count == 0 ? Visibility.Collapsed : Visibility.Visible;
+            }
         }
 
         public void EditMode(bool editable)

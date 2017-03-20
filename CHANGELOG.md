@@ -11,6 +11,11 @@ download in the
 These are the changes to each version that has been released
 on the official Visual Studio extension gallery.
 
+## 1.2
+
+- [x] Only show in PrimaryDocument (not diff view etc.)
+- [x] Fixed null reference exception
+
 ## 1.1
 
 - [x] Option to hide errors, warnings and/or messages
