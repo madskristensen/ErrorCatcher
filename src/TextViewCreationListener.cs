@@ -16,7 +16,7 @@ namespace ErrorCatcher
 
         public void TextViewCreated(IWpfTextView textView)
         {
-            if (!DocumentService.TryGetTextDocument(textView.TextBuffer, out var doc) || ErrorProcessor.Instance == null)
+            if (!DocumentService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out var doc) || ErrorProcessor.Instance == null)
                 return;
 
             textView.Properties.AddProperty("filePath", doc.FilePath);
